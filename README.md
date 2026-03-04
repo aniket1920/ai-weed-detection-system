@@ -85,7 +85,7 @@ https://drive.google.com/drive/folders/1Wn5OxZ2hHjXUaXZhRHsvsjFjHkmfFt9M?usp=sha
 
 ### Landing Page
 
-![Landing Page](assets/hero.png)
+![Landing Page](asset/hero.jpeg)
 
 ---
 
@@ -93,7 +93,7 @@ https://drive.google.com/drive/folders/1Wn5OxZ2hHjXUaXZhRHsvsjFjHkmfFt9M?usp=sha
 
 Upload an agricultural field image and adjust the confidence threshold for detection.
 
-![Upload Image](assets/upload.png)
+![Upload Image](asset/upload.jpeg)
 
 ---
 
@@ -106,7 +106,7 @@ The system also returns:
 • Number of weeds detected  
 • Processing time for inference  
 
-![Detection Result](assets/result.png)
+![Detection Result](asset/result.jpeg)
 
 ---
 
