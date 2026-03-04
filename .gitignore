@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+
+# Environment
+venv/
+env/
+.env
+
+# ML
+*.pt
+*.pth
+runs/
+results/
+uploads/
+
+# Node
+node_modules/
+
+# System
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Dataset
+weed detection/
+
+# Runtime folders
+weed_webapp/results/
+weed_webapp/uploads/
+
+# Python cache
+__pycache__/
+
+# Node modules
+weed-frontend/node_modules/
