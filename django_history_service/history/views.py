@@ -3,6 +3,75 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import DetectionRecord
 from .serializers import DetectionRecordSerializer
+from django.utils import timezone
+from datetime import timedelta
+from django.db.models import Avg, Max, Min, Count, Sum
+
+
+class DetectionReportView(APIView):
+    """
+    GET /api/report/          → full report for last 7 days
+    GET /api/report/?days=30  → last 30 days
+    GET /api/report/?days=1   → today only
+    """
+
+    def get(self, request):
+        days = int(request.query_params.get('days', 7))
+        since = timezone.now() - timedelta(days=days)
+
+        records = DetectionRecord.objects.filter(detected_at__gte=since)
+
+        if not records.exists():
+            return Response({
+                'period_days': days,
+                'message': f'No detections in the last {days} day(s).'
+            })
+
+        # --- Aggregate stats ---
+        stats = records.aggregate(
+            total_scans=Count('id'),
+            total_weeds_found=Sum('weed_count'),
+            avg_weeds=Avg('weed_count'),
+            max_weeds=Max('weed_count'),
+            min_weeds=Min('weed_count'),
+        )
+
+        # --- Daily breakdown ---
+        daily_data = {}
+        for record in records:
+            day = record.detected_at.strftime('%Y-%m-%d')
+            if day not in daily_data:
+                daily_data[day] = {'scans': 0, 'total_weeds': 0}
+            daily_data[day]['scans'] += 1
+            daily_data[day]['total_weeds'] += record.weed_count
+
+        daily_breakdown = [
+            {'date': day, **values}
+            for day, values in sorted(daily_data.items())
+        ]
+
+        # --- Alerts: images with weed_count above average ---
+        avg = stats['avg_weeds'] or 0
+        alerts = records.filter(weed_count__gt=avg).values(
+            'id', 'image_name', 'weed_count', 'detected_at'
+        )
+
+        return Response({
+            'period_days': days,
+            'summary': {
+                'total_scans': stats['total_scans'],
+                'total_weeds_found': stats['total_weeds_found'],
+                'average_weeds_per_scan': round(avg, 2),
+                'max_weeds_in_single_scan': stats['max_weeds'],
+                'min_weeds_in_single_scan': stats['min_weeds'],
+            },
+            'daily_breakdown': daily_breakdown,
+            'alerts': {
+                'description': 'Images with weed count above average — needs attention',
+                'count': alerts.count(),
+                'records': list(alerts),
+            }
+        })
 
 
 class DetectionRecordListCreateView(APIView):
