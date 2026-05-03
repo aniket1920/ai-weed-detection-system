@@ -1,3 +1,4 @@
+import download_weights  # auto-downloads best.pt on first startup
 from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
