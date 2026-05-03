@@ -19,7 +19,7 @@ function App() {
 
     try {
       const response = await axios.post(
-        `http://127.0.0.1:8000/predict?conf=${confidence}`,
+        `https://akhand2210093-weed-detection-api.hf.space/predict?conf=${confidence}`,
         formData,
         { responseType: "blob" }
       );
